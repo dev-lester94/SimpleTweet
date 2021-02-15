@@ -7,10 +7,11 @@ import com.codepath.apps.restclienttemplate.TimeFormatter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Parcel
 public class Tweet {
 
     public String body;
@@ -23,6 +24,9 @@ public class Tweet {
     public boolean favorited;
     public int favoriteCount;
 
+    public Tweet(){// empty constructor needed by the Parceler library
+    }
+
     public static Tweet fromJson(JSONObject jsonObject) throws JSONException {
         Tweet tweet = new Tweet();
         tweet.body = jsonObject.getString("text");
@@ -33,7 +37,7 @@ public class Tweet {
         //Log.d("Tweet" , jsonObject.getJSONObject("entities").toString());
         if(jsonObject.getJSONObject("entities").has("media")){
             tweet.mediaUrl = jsonObject.getJSONObject("entities").getJSONArray("media").getJSONObject(0).getString("media_url_https");
-            tweet.mediaUrl = tweet.mediaUrl + ":small";
+            tweet.mediaUrl = tweet.mediaUrl + ":large";
             //Log.d("Tweet" , tweet.mediaUrl);
         }else{
             tweet.mediaUrl = "";
