@@ -1,6 +1,7 @@
 package com.codepath.apps.restclienttemplate;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.codepath.asynchttpclient.RequestParams;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
@@ -69,6 +70,57 @@ public class TwitterClient extends OAuthBaseClient {
 		params.put("status", tweetContent);
 		client.post(apiUrl, params, "",  handler);
 	}
+
+	public void accountCredentials(JsonHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("account/verify_credentials.json");
+		RequestParams params = new RequestParams();
+		client.get(apiUrl, params, handler);
+	}
+
+	public void publishReply(long id, String tweetContent, JsonHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/update.json");
+		RequestParams params = new RequestParams();
+		params.put("status", tweetContent);
+		params.put("in_reply_to_status_id",id);
+		client.post(apiUrl, params, "",  handler);
+	}
+
+	public void publishRetweet(long id, JsonHttpResponseHandler handler) {
+		Log.i("retweet", ""+id);
+		String apiUrl = getApiUrl("statuses/retweet/"+id +".json");
+		RequestParams params = new RequestParams();
+		//params.put("id",id);
+		client.post(apiUrl, params, "",  handler);
+	}
+
+	public void publishUnRetweet(long id, JsonHttpResponseHandler handler) {
+		Log.i("unretweet", ""+id);
+		String apiUrl = getApiUrl("statuses/unretweet/"+id +".json");
+		RequestParams params = new RequestParams();
+		//params.put("id",id);
+		client.post(apiUrl, params, "",  handler);
+	}
+
+	public void publishTweetFavorited(long id, JsonHttpResponseHandler handler) {
+		Log.i("unretweet", ""+id);
+		String apiUrl = getApiUrl("favorites/create.json");
+		RequestParams params = new RequestParams();
+		params.put("id",id);
+		client.post(apiUrl, params, "",  handler);
+	}
+
+	public void publishTweetUnFavorited(long id, JsonHttpResponseHandler handler) {
+		Log.i("unretweet", ""+id);
+		String apiUrl = getApiUrl("favorites/destroy.json");
+		RequestParams params = new RequestParams();
+		params.put("id",id);
+		client.post(apiUrl, params, "",  handler);
+	}
+
+
+
+
+
 
 	/* 1. Define the endpoint URL with getApiUrl and pass a relative path to the endpoint
 	 * 	  i.e getApiUrl("statuses/home_timeline.json");

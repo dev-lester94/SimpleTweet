@@ -37,7 +37,7 @@ public class Tweet {
         //Log.d("Tweet" , jsonObject.getJSONObject("entities").toString());
         if(jsonObject.getJSONObject("entities").has("media")){
             tweet.mediaUrl = jsonObject.getJSONObject("entities").getJSONArray("media").getJSONObject(0).getString("media_url_https");
-            tweet.mediaUrl = tweet.mediaUrl + ":large";
+            tweet.mediaUrl = tweet.mediaUrl + ":medium";
             //Log.d("Tweet" , tweet.mediaUrl);
         }else{
             tweet.mediaUrl = "";

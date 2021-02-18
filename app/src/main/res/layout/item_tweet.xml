@@ -77,6 +77,7 @@
 
 
     <ImageView
+        android:id="@+id/ivReply"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_below="@id/ivMediaImage"

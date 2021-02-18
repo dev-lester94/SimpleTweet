@@ -11,10 +11,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,7 +30,8 @@ import okhttp3.Headers;
 public class TimelineActivity extends AppCompatActivity {
 
     public static final String TAG = "TimelineActivity";
-    private final int REQUEST_CODE = 20;
+    private final int COMPOSE_REQUEST_CODE = 20;
+    private static final int REPLY_REQUEST_CODE = 30;
 
     TwitterClient client;
     RecyclerView rvTweets;
@@ -36,6 +39,10 @@ public class TimelineActivity extends AppCompatActivity {
     TweetsAdapter adapter;
     SwipeRefreshLayout swipeContainer;
     EndlessRecyclerViewScrollListener scrollListener;
+    FloatingActionButton composeButton;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +50,8 @@ public class TimelineActivity extends AppCompatActivity {
         setContentView(R.layout.activity_timeline);
 
         client = TwitterApp.getRestClient(this);
+
+
 
         swipeContainer = findViewById(R.id.swipeContainer);
 
@@ -66,7 +75,7 @@ public class TimelineActivity extends AppCompatActivity {
 
         //Init the list of tweets and adapter
         tweets = new ArrayList<>();
-        adapter = new TweetsAdapter(this, tweets);
+        adapter = new TweetsAdapter(this, tweets, client);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
 
@@ -84,6 +93,16 @@ public class TimelineActivity extends AppCompatActivity {
 
         // Adds the scroll listener to RecyclerView
         rvTweets.addOnScrollListener(scrollListener);
+
+        composeButton = findViewById(R.id.fbComposeTweet);
+        composeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(TimelineActivity.this, ComposeActivity.class);
+                intent.putExtra("composeOrReply", "compose");
+                startActivityForResult(intent, COMPOSE_REQUEST_CODE);
+            }
+        });
 
         populateHomeTimeLine();
     }
@@ -117,7 +136,7 @@ public class TimelineActivity extends AppCompatActivity {
         }, tweets.get(tweets.size()-1).id);
 
     }
-
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -129,25 +148,37 @@ public class TimelineActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
        if(item.getItemId() == R.id.compose){
-           Toast.makeText(this, "Compose!", Toast.LENGTH_SHORT).show();
+           //Toast.makeText(this, "Compose!", Toast.LENGTH_SHORT).show();
            Intent intent = new Intent(TimelineActivity.this, ComposeActivity.class);
-           startActivityForResult(intent, REQUEST_CODE);
+           intent.putExtra("composeOrReply", "compose");
+           startActivityForResult(intent, COMPOSE_REQUEST_CODE);
            return true;
        }
         return super.onOptionsItemSelected(item);
     }
 
+     */
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
+        if (resultCode == RESULT_OK && requestCode == COMPOSE_REQUEST_CODE) {
             //Get data from the intent (tweet)
             Tweet tweet = Parcels.unwrap(data.getParcelableExtra("tweet"));
             //Update the RV with the tweet
             tweets.add(0, tweet);
             //Update
-            adapter.notifyItemInserted(0);
+            adapter.notifyDataSetChanged();
             rvTweets.smoothScrollToPosition(0);
 
+        }else if(resultCode == RESULT_OK && requestCode == REPLY_REQUEST_CODE){
+            //Get data from the intent (tweet)
+            Tweet tweet = Parcels.unwrap(data.getParcelableExtra("tweet"));
+            //Update the RV with the tweet
+            tweets.add(0, tweet);
+            //Update
+            adapter.notifyDataSetChanged();
+            rvTweets.smoothScrollToPosition(0);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
